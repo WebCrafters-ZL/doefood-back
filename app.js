@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 
 const app = express();
 app.use(express.json());
@@ -11,9 +11,9 @@ app.listen(PORT, () => {
 
 app.get('/status', (req, res) => {
     const status = {
-        "Status": "Rodando"
+        Status: "Rodando"
     };
     res.send(status);
 });
 
-module.exports = app;
+export default app;
