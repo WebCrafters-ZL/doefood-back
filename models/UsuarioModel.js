@@ -1,27 +1,23 @@
-const BaseModel = require('./BaseModel');
+import BaseModel from './BaseModel.js';
 
 class UsuarioModel extends BaseModel {
   constructor() {
-    super('usuarios'); // Nome da coleção no Firestore
+    super('usuarios');
   }
 
-
-  async findByEmail(email) {
+  findByEmail = async (email) => {
     const snapshot = await this.collection.where('email', '==', email).get();
     if (snapshot.empty) return null;
-
     const doc = snapshot.docs[0];
     return { id: doc.id, ...doc.data() };
-  }
+  };
 
-  async findByCnpj(cnpj) {
+  findByCnpj = async (cnpj) => {
     const snapshot = await this.collection.where('cnpj', '==', cnpj).get();
     if (snapshot.empty) return null;
-
     const doc = snapshot.docs[0];
     return { id: doc.id, ...doc.data() };
-  }
-  // Métodos específicos podem ser adicionados aqui
+  };
 }
 
-module.exports = UsuarioModel;
+export default UsuarioModel;
