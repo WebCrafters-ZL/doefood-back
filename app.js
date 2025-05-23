@@ -19,6 +19,9 @@ const app = express();
  */
 app.use(express.json());
 
+import usuariosRouter from './routes/usuarios/usuarios.js';
+app.use('/usuarios', usuariosRouter);
+
 /**
  * Server port number.
  * Defaults to 3000 if the PORT environment variable is not set.

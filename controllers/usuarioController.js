@@ -1,7 +1,7 @@
-const UsuarioModel = require('../models/UsuarioModel');
+import UsuarioModel from '../models/UsuarioModel.js';
 const usuarioModel = new UsuarioModel();
 
-const criarUsuario = async (req, res) => {
+export const criarUsuario = async (req, res) => {
   try {
     const novoUsuario = await usuarioModel.create(req.body);
     res.status(201).json(novoUsuario);
@@ -10,16 +10,18 @@ const criarUsuario = async (req, res) => {
   }
 };
 
-const obterUsuario = async (req, res) => {
+export const obterUsuario = async (req, res) => {
   try {
     const usuario = await usuarioModel.findById(req.params.id);
-    usuario ? res.json(usuario) : res.status(404).send('Usuário não encontrado');
+    usuario
+      ? res.json(usuario)
+      : res.status(404).send('Usuário não encontrado');
   } catch (error) {
     res.status(500).json({ erro: error.message });
   }
 };
 
-const atualizarUsuario = async (req, res) => {
+export const atualizarUsuario = async (req, res) => {
   try {
     const usuarioAtualizado = await usuarioModel.update(req.params.id, req.body);
     res.json(usuarioAtualizado);
@@ -28,7 +30,7 @@ const atualizarUsuario = async (req, res) => {
   }
 };
 
-const excluirUsuario = async (req, res) => {
+export const excluirUsuario = async (req, res) => {
   try {
     await usuarioModel.delete(req.params.id);
     res.status(204).send();
@@ -37,7 +39,7 @@ const excluirUsuario = async (req, res) => {
   }
 };
 
-const listarUsuarios = async (req, res) => {
+export const listarUsuarios = async (req, res) => {
   try {
     const usuarios = await usuarioModel.findAll();
     res.json(usuarios);
@@ -46,31 +48,24 @@ const listarUsuarios = async (req, res) => {
   }
 };
 
-// Métodos adicionais específicos
-const buscarPorEmail = async (req, res) => {
+export const buscarPorEmail = async (req, res) => {
   try {
-    const usuario = await usuarioModel.pesquisaPorEmail(req.params.email);
-    usuario ? res.json(usuario) : res.status(404).send('Usuário não encontrado');
+    const usuario = await usuarioModel.findByEmail(req.params.email);
+    usuario
+      ? res.json(usuario)
+      : res.status(404).send('Usuário não encontrado');
   } catch (error) {
     res.status(500).json({ erro: error.message });
   }
 };
 
-const buscarPorCnpj = async (req, res) => {
+export const buscarPorCnpj = async (req, res) => {
   try {
-    const usuario = await usuarioModel.pesquisaPorCnpj(req.params.cnpj);
-    usuario ? res.json(usuario) : res.status(404).send('Usuário não encontrado');
+    const usuario = await usuarioModel.findByCnpj(req.params.cnpj);
+    usuario
+      ? res.json(usuario)
+      : res.status(404).send('Usuário não encontrado');
   } catch (error) {
     res.status(500).json({ erro: error.message });
   }
-};
-
-module.exports = {
-  criarUsuario,
-  obterUsuario,
-  atualizarUsuario,
-  excluirUsuario,
-  listarUsuarios,
-  buscarPorEmail,
-  buscarPorCnpj
 };
