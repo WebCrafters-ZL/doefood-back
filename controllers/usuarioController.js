@@ -36,7 +36,7 @@ export const obterUsuario = async (req, res) => {
   try {
     const usuario = await usuarioModel.findById(req.params.id);
     usuario
-      ? res.json(usuario)
+      ? res.status(200).json(usuario)
       : res.status(404).send('Usuário não encontrado');
   } catch (error) {
     res.status(500).json({ erro: error.message });
@@ -55,7 +55,7 @@ export const obterUsuario = async (req, res) => {
 export const atualizarUsuario = async (req, res) => {
   try {
     const usuarioAtualizado = await usuarioModel.update(req.params.id, req.body);
-    res.json(usuarioAtualizado);
+    res.status(200).json(usuarioAtualizado);
   } catch (error) {
     res.status(400).json({ erro: error.message });
   }
@@ -74,64 +74,6 @@ export const excluirUsuario = async (req, res) => {
   try {
     await usuarioModel.delete(req.params.id);
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ erro: error.message });
-  }
-};
-
-/**
- * Lista todos os usuários.
- *
- * @async
- * @function listarUsuarios
- * @param {import('express').Request} req - Objeto de requisição do Express.
- * @param {import('express').Response} res - Objeto de resposta do Express.
- * @returns {Promise<void>} Retorna uma resposta JSON com a lista de usuários ou um erro.
- */
-export const listarUsuarios = async (req, res) => {
-  try {
-    const usuarios = await usuarioModel.findAll();
-    res.json(usuarios);
-  } catch (error) {
-    res.status(500).json({ erro: error.message });
-  }
-};
-
-/**
- * Busca um usuário pelo email fornecido nos parâmetros da requisição.
- *
- * @async
- * @function buscarPorEmail
- * @param {import('express').Request} req - Objeto de requisição do Express, contendo o parâmetro 'email'.
- * @param {import('express').Response} res - Objeto de resposta do Express.
- * @returns {Promise<void>} Retorna uma resposta JSON com o usuário encontrado ou um erro.
- */
-export const buscarPorEmail = async (req, res) => {
-  try {
-    const usuario = await usuarioModel.findByEmail(req.params.email);
-    usuario
-      ? res.json(usuario)
-      : res.status(404).send('Usuário não encontrado');
-  } catch (error) {
-    res.status(500).json({ erro: error.message });
-  }
-};
-
-/**
- * Busca um usuário pelo CNPJ fornecido nos parâmetros da requisição.
- *
- * @async
- * @function buscarPorCnpj
- * @param {import('express').Request} req - Objeto de requisição do Express, contendo o CNPJ em req.params.cnpj.
- * @param {import('express').Response} res - Objeto de resposta do Express.
- * @returns {Promise<void>} Retorna uma resposta JSON com o usuário encontrado ou um erro apropriado.
- */
-export const buscarPorCnpj = async (req, res) => {
-  try {
-    const usuario = await usuarioModel.findByCnpj(req.params.cnpj);
-    usuario
-      ? res.json(usuario)
-      : res.status(404).send('Usuário não encontrado');
   } catch (error) {
     res.status(500).json({ erro: error.message });
   }
