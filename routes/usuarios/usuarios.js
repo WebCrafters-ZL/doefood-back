@@ -17,30 +17,26 @@
  * @route POST /           Cria um novo usuário
  * @route GET /            Lista todos os usuários
  * @route GET /:id         Obtém um usuário pelo ID
- * @route PUT /:id         Atualiza um usuário pelo ID
- * @route DELETE /:id      Exclui um usuário pelo ID
  * @route GET /email/:email Busca um usuário pelo e-mail
  * @route GET /cnpj/:cnpj   Busca um usuário pelo CNPJ
+ * @route PUT /:id         Atualiza um usuário pelo ID
+ * @route DELETE /:id      Exclui um usuário pelo ID
  */
+
 import express from 'express';
 import {
   criarUsuario,
-  listarUsuarios,
   obterUsuario,
   atualizarUsuario,
   excluirUsuario,
-  buscarPorEmail,
-  buscarPorCnpj
 } from '../../controllers/usuarioController.js';
+import verificarToken from '../../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.post('/', criarUsuario);
-router.get('/', listarUsuarios);
-router.get('/:id', obterUsuario);
-router.put('/:id', atualizarUsuario);
-router.delete('/:id', excluirUsuario);
-router.get('/email/:email', buscarPorEmail);
-router.get('/cnpj/:cnpj', buscarPorCnpj);
+router.get('/:id', verificarToken, obterUsuario);
+router.put('/:id', verificarToken, atualizarUsuario);
+router.delete('/:id', verificarToken, excluirUsuario);
 
 export default router;
