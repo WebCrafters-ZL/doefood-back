@@ -11,7 +11,9 @@
  *
  * @throws {401} Se o token não for fornecido ou for inválido.
  */
-import admin from "firebase-admin";
+
+import auth from "../services/authService.js";
+import { mapFirebaseAuthCodeToMessage } from '../utils/firebaseAuthMessages.js';
 
 const verificarToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -22,12 +24,28 @@ const verificarToken = async (req, res, next) => {
 
   const token = authHeader.split(" ")[1];
 
+  if (token.length < 100 || !/^[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+\.?[A-Za-z0-9\-_.+/=]*$/.test(token)) {
+    return res.status(401).json({
+      code: 'invalid-token-format',
+      message: 'Formato do token inválido'
+    });
+  }
+
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
+    const decoded = await auth.verifyIdToken(token, true);
     req.usuario = decoded;
+    console.log(`Autenticação bem-sucedida para: ${decoded.email} (${decoded.uid})`);
+    res.header({
+      'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+      'X-Content-Type-Options': 'nosniff'
+    });
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Token inválido" });
+  } catch (error) {
+    const code = error.errorInfo?.code || error.code || 'auth/unknown';
+    res.status(401).json({
+      code: code.replace('auth/', ''),
+      message: mapFirebaseAuthCodeToMessage(code),
+    });
   }
 };
 
