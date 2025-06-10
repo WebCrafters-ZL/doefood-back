@@ -1,6 +1,6 @@
 import UsuarioModel from '../models/UsuarioModel.js';
 /**
- * Instance of the UsuarioModel class used to interact with user-related data and operations.
+ * Instância do modelo de Usuário para manipulação de dados de usuários.
  * @type {UsuarioModel}
  */
 const usuarioModel = new UsuarioModel();
@@ -42,6 +42,62 @@ export const obterUsuario = async (req, res) => {
     res.status(500).json({ erro: error.message });
   }
 };
+
+/**
+ * Busca usuários por email.
+ * @async
+ * @function buscarUsuarioPorEmail
+ * @param {import('express').Request} req - Objeto de requisição do Express, contendo o email do usuário a ser buscado em `query.email`.
+ * @param {import('express').Response} res - Objeto de resposta do Express.
+ * @returns {Promise<void>} Retorna uma resposta JSON com o usuário encontrado ou um erro.
+ */
+export const buscarUsuarioPorEmail = async (req, res) => {
+  try {
+    const usuario = await usuarioModel.buscarPorEmail(req.query.email);
+    usuario
+      ? res.status(200).json(usuario)
+      : res.status(404).send('Usuário não encontrado');
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
+};
+
+/**
+ * Busca usuários por CNPJ.
+ * @async
+ * @function buscarUsuarioPorCnpj
+ * @param {import('express').Request} req - Objeto de requisição do Express, contendo o CNPJ do usuário a ser buscado em `query.CNPJ`.
+ * @param {import('express').Response} res - Objeto de resposta do Express.
+ * @returns {Promise<void>} Retorna uma resposta JSON com o usuário encontrado ou um erro.
+ */
+export const buscarUsuarioPorCnpj = async (req, res) => {
+  try {
+    const usuario = await usuarioModel.buscarPorCNPJ(req.query.CNPJ);
+    usuario
+      ? res.status(200).json(usuario)
+      : res.status(404).send('Usuário não encontrado');
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
+};
+
+/**
+ * Lista todos os usuários cadastrados.
+ *
+ * @async
+ * @function listarTodosUsuarios
+ * @param {import('express').Request} req - Objeto de requisição do Express.
+ * @param {import('express').Response} res - Objeto de resposta do Express.
+ * @returns {Promise<void>} Retorna uma resposta JSON com a lista de usuários ou um erro.
+ */
+export const listarTodosUsuarios = async (req, res) => {
+  try {
+    const usuarios = await usuarioModel.findAll();
+    res.status(200).json(usuarios);
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
+}
 
 /**
  * Atualiza um usuário existente com os dados fornecidos.
