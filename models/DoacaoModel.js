@@ -11,7 +11,7 @@ import BaseModel from "./BaseModel.js";
 class DoacaoModel extends BaseModel {
   constructor() {
     super("doacoes");
-  }
+  };
 
   /**
    * Método para buscar doações por ID de doador.
@@ -20,13 +20,17 @@ class DoacaoModel extends BaseModel {
    */
   async buscarPorDoadorId(doadorId) {
     try {
-      const doacoes = await this.collection.find({ doadorId }).toArray();
+      const snapshot = await this.collection.where("doadorId", "==", doadorId).get();
+      const doacoes = [];
+      snapshot.forEach(doc => {
+        doacoes.push({ id: doc.id, ...doc.data() });
+      });
       return doacoes;
     } catch (error) {
       console.error("Erro ao buscar doações por doador:", error);
       throw error;
     }
-  }
+  };
 
   /**
    * Método para buscar doações por ID de beneficiário.
@@ -35,13 +39,17 @@ class DoacaoModel extends BaseModel {
    */
   async buscarPorBeneficiarioId(beneficiarioId) {
     try {
-      const doacoes = await this.collection.find({ beneficiarioId }).toArray();
+      const snapshot = await this.collection.where("beneficiarioId", "==", beneficiarioId).get();
+      const doacoes = [];
+      snapshot.forEach(doc => {
+        doacoes.push({ id: doc.id, ...doc.data() });
+      });
       return doacoes;
     } catch (error) {
       console.error("Erro ao buscar doações por beneficiário:", error);
       throw error;
     }
-  }
-}
+  };
+};
 
 export default DoacaoModel;
