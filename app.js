@@ -28,6 +28,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import usuariosRouter from './routes/usuarios/usuarios.js';
+import doacoesRouter from './routes/doacoes/doacoes.js';
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use(morgan('dev'));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 app.use('/usuarios', usuariosRouter);
+app.use('/doacoes', doacoesRouter);
 app.get('/status', (req, res) => {
   res.json({
     status: 'online',
