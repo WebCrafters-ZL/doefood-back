@@ -54,7 +54,7 @@ export const obterDoacao = async (req, res) => {
  */
 export const buscarDoacoesPorDoador = async (req, res) => {
     try {
-        const doacoes = await doacaoModel.findByDoadorId(req.params.id);
+        const doacoes = await doacaoModel.buscarPorDoadorId(req.params.id);
         res.status(200).json(doacoes);
     } catch (error) {
         res.status(500).json({ erro: error.message });
@@ -72,7 +72,7 @@ export const buscarDoacoesPorDoador = async (req, res) => {
  */
 export const buscarDoacoesPorBeneficiario = async (req, res) => {
     try {
-        const doacoes = await doacaoModel.findByBeneficiarioId(req.params.id);
+        const doacoes = await doacaoModel.buscarPorBeneficiarioId(req.params.id);
         res.status(200).json(doacoes);
     } catch (error) {
         res.status(500).json({ erro: error.message });
