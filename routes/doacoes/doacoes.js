@@ -4,7 +4,8 @@
  * Define as rotas relacionadas às operações de doações, incluindo:
  * - Criação de doação
  * - Obtenção de doação por ID
- * - Busca de doações por ID de usuário
+ * - Busca de doações por ID de doador
+ * - Busca de doações por ID de beneficiário
  * - Listagem de todas as doações
  * @module routes/doacoes
  * @requires express
@@ -12,7 +13,8 @@
  * 
  * @route POST /           Cria uma nova doação
  * @route GET /:id         Obtém uma doação pelo ID
- * @route GET /usuario/:id  Busca doações por ID de usuário
+ * @route GET /doador/:id  Busca doações por ID de doador
+ * @route GET /beneficiario/:id Busca doações por ID de beneficiário
  * @route GET /            Lista todas as doações 
  */
 
@@ -20,7 +22,8 @@ import express from 'express';
 import {
   criarDoacao,
   obterDoacao,
-  buscarDoacoesPorUsuarioId,
+  buscarDoacoesPorDoador,
+  buscarDoacoesPorBeneficiario,
   obterTodasDoacoes,
 } from '../../controllers/doacaoController.js';
 import verificarToken from '../../middlewares/authMiddleware.js';
@@ -29,7 +32,8 @@ const router = express.Router();
 
 router.post('/', verificarToken, criarDoacao);
 router.get('/:id', verificarToken, obterDoacao);
-router.get('/usuario/:id', verificarToken, buscarDoacoesPorUsuarioId);
+router.get('/doador/:id', verificarToken, buscarDoacoesPorDoador);
+router.get('/beneficiario/:id', verificarToken, buscarDoacoesPorBeneficiario);
 router.get('/', verificarToken, obterTodasDoacoes);
 
 export default router;

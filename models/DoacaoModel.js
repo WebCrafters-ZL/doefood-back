@@ -14,16 +14,31 @@ class DoacaoModel extends BaseModel {
   }
 
   /**
-   * Método para buscar doações por ID de usuário.
-   * @param {string} usuarioId - ID do usuário cujas doações serão buscadas.
-   * @returns {Promise<Array>} - Lista de doações associadas ao usuário.
+   * Método para buscar doações por ID de doador.
+   * @param {string} doadorId - ID do doador cujas doações serão buscadas.
+   * @returns {Promise<Array>} - Lista de doações associadas ao doador.
    */
-  async buscarPorUsuarioId(usuarioId) {
+  async buscarPorDoadorId(doadorId) {
     try {
-      const doacoes = await this.collection.find({ usuarioId }).toArray();
+      const doacoes = await this.collection.find({ doadorId }).toArray();
       return doacoes;
     } catch (error) {
-      console.error("Erro ao buscar doações por usuário:", error);
+      console.error("Erro ao buscar doações por doador:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Método para buscar doações por ID de beneficiário.
+   * @param {string} beneficiarioId - ID do beneficiário cujas doações serão buscadas.
+   * @returns {Promise<Array>} - Lista de doações associadas ao beneficiário.
+   */
+  async buscarPorBeneficiarioId(beneficiarioId) {
+    try {
+      const doacoes = await this.collection.find({ beneficiarioId }).toArray();
+      return doacoes;
+    } catch (error) {
+      console.error("Erro ao buscar doações por beneficiário:", error);
       throw error;
     }
   }
