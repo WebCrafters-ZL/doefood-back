@@ -5,6 +5,7 @@ import DoacaoModel from "../models/DoacaoModel.js";
  * @type {DoacaoModel}
  */
 const doacaoModel = new DoacaoModel();
+
 /**
  * Cria uma nova doação no banco de dados.
  *
@@ -43,23 +44,40 @@ export const obterDoacao = async (req, res) => {
     }
 }
 
-/**
- * Busca doações por ID de usuário.
+/** Obtém todas as doações de um doador específico pelo ID do doador.
  *
  * @async
- * @function buscarDoacoesPorUsuarioId
- * @param {import('express').Request} req - Objeto de requisição do Express, contendo o ID do usuário em `params.id`.
+ * @function buscarDoacoesPorDoador
+ * @param {import('express').Request} req - Objeto de requisição do Express, contendo o ID do doador em `params.id`.
  * @param {import('express').Response} res - Objeto de resposta do Express.
- * @returns {Promise<void>} Retorna uma resposta JSON com a lista de doações ou um erro.
+ * @returns {Promise<void>} Retorna uma resposta JSON com as doações do doador ou um erro.
  */
-export const buscarDoacoesPorUsuarioId = async (req, res) => {
+export const buscarDoacoesPorDoador = async (req, res) => {
     try {
-        const doacoes = await doacaoModel.buscarPorUsuarioId(req.params.id);
+        const doacoes = await doacaoModel.findByDoadorId(req.params.id);
         res.status(200).json(doacoes);
     } catch (error) {
         res.status(500).json({ erro: error.message });
     }
-}
+};
+
+/**
+ * Obtém todas as doações de um beneficiário específico pelo ID do beneficiário.
+ *
+ * @async
+ * @function buscarDoacoesPorBeneficiario
+ * @param {import('express').Request} req - Objeto de requisição do Express, contendo o ID do beneficiário em `params.id`.
+ * @param {import('express').Response} res - Objeto de resposta do Express.
+ * @returns {Promise<void>} Retorna uma resposta JSON com as doações do beneficiário ou um erro.
+ */
+export const buscarDoacoesPorBeneficiario = async (req, res) => {
+    try {
+        const doacoes = await doacaoModel.findByBeneficiarioId(req.params.id);
+        res.status(200).json(doacoes);
+    } catch (error) {
+        res.status(500).json({ erro: error.message });
+    }
+};
 
 /**
  * Obtém todas as doações registradas no banco de dados.
