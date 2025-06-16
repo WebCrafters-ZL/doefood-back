@@ -32,12 +32,13 @@ export const recuperarSenha = async (req, res) => {
             return res.status(404).json({ mensagem: 'Usuário não encontrado' });
         }
 
-        const payload = { uid: usuario.uid };
+        // Use o campo correto do usuário Firestore
+        const payload = { uid: usuario.id }; // Aqui, 'id' é o uid do Auth
         const token = tokenService.gerarToken(payload);
 
         await usuarioController.salvarTokenRedefinicao(usuario.id, token);
 
-        const linkRedefinicao = `${process.env.FRONTEND_URL}/redefinir-senha?token=${token}`;
+        const linkRedefinicao = `${process.env.FRONTEND_URL}/autenticacao/redefinir-senha/${token}`;
 
         await emailService.enviarEmailRedefinicao(email, linkRedefinicao);
 
@@ -65,8 +66,7 @@ export const redefinirSenha = async (req, res) => {
         const { novaSenha } = req.body;
 
         const decoded = tokenService.verificarToken(token);
-        const uid = decoded.uid || decoded.userId; // use o campo correto conforme seu payload
-
+        const uid = decoded.uid; // ou decoded.userId, conforme o payload
         if (!uid) {
             return res.status(400).json({ erro: 'UID inválido para redefinição de senha.' });
         }
