@@ -1,4 +1,12 @@
+/**
+ *  Controlador para manipulação de usuários.
+ *  Este controlador fornece funcionalidades para criar, obter, atualizar e listar usuários,
+ *  além de buscar usuários por email ou CNPJ.
+ *  @module usuarioController
+ *  @requires UsuarioModel
+ */
 import UsuarioModel from '../models/UsuarioModel.js';
+import auth from '../services/authService.js';
 /**
  * Instância do modelo de Usuário para manipulação de dados de usuários.
  * @type {UsuarioModel}
@@ -17,9 +25,9 @@ const usuarioModel = new UsuarioModel();
 export const criarUsuario = async (req, res) => {
   try {
     const novoUsuario = await usuarioModel.create(req.body);
-    res.status(201).json(novoUsuario);
+    return res.status(201).json(novoUsuario);
   } catch (error) {
-    res.status(400).json({ erro: error.message });
+    return res.status(400).json({ erro: error.message });
   }
 };
 
@@ -35,11 +43,11 @@ export const criarUsuario = async (req, res) => {
 export const obterUsuario = async (req, res) => {
   try {
     const usuario = await usuarioModel.findById(req.params.id);
-    usuario
+    return usuario
       ? res.status(200).json(usuario)
       : res.status(404).send('Usuário não encontrado');
   } catch (error) {
-    res.status(500).json({ erro: error.message });
+    return res.status(500).json({ erro: error.message });
   }
 };
 
@@ -54,12 +62,34 @@ export const obterUsuario = async (req, res) => {
 export const buscarUsuarioPorEmail = async (req, res) => {
   try {
     const usuario = await usuarioModel.buscarPorEmail(req.query.email);
-    usuario
+    return usuario
       ? res.status(200).json(usuario)
-      : res.status(404).send('Usuário não encontrado');
+      : res.status(404).json({ message: "Usuário não encontrado" });
   } catch (error) {
-    res.status(500).json({ erro: error.message });
+    return res.status(500).json({ erro: error.message });
   }
+};
+
+/**
+ * Busca usuários por email de forma simples, sem utilizar o objeto de requisição.
+ *
+ * @async
+ * @function buscarUsuarioPorEmailSimples
+ * @param {string} email - O email do usuário a ser buscado.
+ * @returns {Promise<Object|null>} Retorna o usuário encontrado ou null se não encontrado.
+ */
+export const buscarUsuarioPorEmailSimples = async (email) => {
+  if (!email) {
+    throw new Error('Email é obrigatório para busca de usuário.');
+  }
+  const registroUsuario = await auth.getUserByEmail(email);
+  const uid = registroUsuario.uid;
+
+  const usuario = await usuarioModel.findById(uid);
+  if (!usuario) {
+    throw new Error('Usuário não encontrado');
+  }
+  return usuario;
 };
 
 /**
@@ -73,11 +103,11 @@ export const buscarUsuarioPorEmail = async (req, res) => {
 export const buscarUsuarioPorCnpj = async (req, res) => {
   try {
     const usuario = await usuarioModel.buscarPorCNPJ(req.query.CNPJ);
-    usuario
+    return usuario
       ? res.status(200).json(usuario)
       : res.status(404).send('Usuário não encontrado');
   } catch (error) {
-    res.status(500).json({ erro: error.message });
+    return res.status(500).json({ erro: error.message });
   }
 };
 
@@ -93,9 +123,9 @@ export const buscarUsuarioPorCnpj = async (req, res) => {
 export const listarTodosUsuarios = async (req, res) => {
   try {
     const usuarios = await usuarioModel.findAll();
-    res.status(200).json(usuarios);
+    return res.status(200).json(usuarios);
   } catch (error) {
-    res.status(500).json({ erro: error.message });
+    return res.status(500).json({ erro: error.message });
   }
 }
 
@@ -110,11 +140,59 @@ export const listarTodosUsuarios = async (req, res) => {
  */
 export const atualizarUsuario = async (req, res) => {
   try {
-    const usuarioAtualizado = await usuarioModel.update(req.params.id, req.body);
-    res.status(200).json(usuarioAtualizado);
+    const id = req.params.id;
+    const dados = req.body;
+
+    if (!id) {
+      throw new Error('ID do usuário não pode ser vazio ao atualizar');
+    }
+    await usuarioModel.update(id, dados);
+    return res.status(200).json({ message: 'Usuário atualizado com sucesso' });
   } catch (error) {
-    res.status(400).json({ erro: error.message });
+    return res.status(400).json({ erro: error.message });
   }
+};
+
+/**
+ * Salva um token de redefinição de senha para um usuário específico.
+ *
+ * @async
+ * @function salvarTokenRedefinicao
+ * @param {number|string} userId - ID do usuário para o qual o token será salvo.
+ * @param {string} token - Token de redefinição de senha a ser salvo.
+ * @returns {Promise<[number, any[]]>} Retorna uma promessa com o resultado da atualização.
+ */
+export const salvarTokenRedefinicao = async (userId, token) => {
+  return usuarioModel.update(userId, { token_redefinicao: token });
+};
+
+/**
+ * Invalida o token de redefinição de senha de um usuário, removendo-o do registro.
+ *
+ * @async
+ * @function invalidarTokenRedefinicao
+ * @param {number|string} userId - ID do usuário cujo token será invalidado.
+ * @returns {Promise<[number, any[]]>} Retorna uma promessa com o resultado da atualização.
+ */
+export const invalidarTokenRedefinicao = async (userId) => {
+  return usuarioModel.update(userId, { token_redefinicao: null });
+};
+
+/**
+ * Valida se o token de redefinição de senha fornecido corresponde ao usuário.
+ *
+ * @async
+ * @function validarTokenRedefinicao
+ * @param {number|string} userId - ID do usuário a ser validado.
+ * @param {string} token - Token de redefinição de senha a ser validado.
+ * @returns {Promise<Object|null>} Retorna o usuário se o token for válido, ou null caso contrário.
+ */
+export const validarTokenRedefinicao = async (userId, token) => {
+  const usuario = await usuarioModel.findById(userId);
+  if (usuario && usuario.token_redefinicao === token) {
+    return usuario;
+  }
+  return null;
 };
 
 /**
@@ -134,3 +212,4 @@ export const excluirUsuario = async (req, res) => {
     res.status(500).json({ erro: error.message });
   }
 };
+
