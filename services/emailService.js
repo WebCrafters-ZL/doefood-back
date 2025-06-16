@@ -19,6 +19,8 @@ export const enviarEmailRedefinicao = async (email, link) => {
     html: `
       <p>Você solicitou a redefinição de senha. Clique no link abaixo:</p>
       <a href="${link}">Redefinir Senha</a>
+      <p>Se preferir, copie e cole o link na barra de endereço:</p>
+      <p>${link}</p>
       <p>Se não foi você, ignore este e-mail.</p>
     `
   };
