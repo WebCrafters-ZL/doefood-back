@@ -54,8 +54,11 @@ class BaseModel {
   };
 
   update = async (id, data) => {
+    if (!id) {
+      throw new Error('ID do documento é obrigatório para atualização.');
+    }
     await this.collection.doc(id).update(data);
-    return this.findById(id);
+    return { id, ...data };
   };
 
   delete = async (id) => {

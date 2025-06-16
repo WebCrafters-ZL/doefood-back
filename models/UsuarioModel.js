@@ -18,9 +18,17 @@ class UsuarioModel extends BaseModel {
    * @returns {Promise<Object|null>} - Objeto do usuário encontrado ou null se não existir.
    */
   async buscarPorEmail(email) {
+    if (!email) {
+      throw new Error('Email é obrigatório para busca de usuário.');
+    }
+
     try {
-      const usuario = await this.collection.findOne({ email });
-      return usuario;
+      const snapshot = await this.collection.where('email', '==', email).limit(1).get();
+      if (snapshot.empty) {
+        return null;
+      }
+      const doc = snapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
     } catch (error) {
       console.error('Erro ao buscar usuário por email:', error);
       throw error;
@@ -28,15 +36,22 @@ class UsuarioModel extends BaseModel {
   }
   /**
    * Método para buscar um usuário por CNPJ.
-   * @param {string} CNPJ - CNPJ do usuário a ser buscado.
+   * @param {string} cnpj - CNPJ do usuário a ser buscado.
    * @returns {Promise<Object|null>} - Objeto do usuário encontrado ou null se não existir.
    */
-  async buscarPorCNPJ(CNPJ) {
-    try {
-      const usuario = await this.collection.findOne({ CNPJ });
-      return usuario;
+  async buscarPorCnpj(cnpj) {
+    if (!cnpj) {
+      throw new Error('CNPJ é obrigatório para busca de usuário.');
     }
-    catch (error) {
+
+    try {
+      const snapshot = await this.collection.where('cnpj', '==', cnpj).limit(1).get();
+      if (snapshot.empty) {
+        return null;
+      }
+      const doc = snapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
+    } catch (error) {
       console.error('Erro ao buscar usuário por CNPJ:', error);
       throw error;
     }
