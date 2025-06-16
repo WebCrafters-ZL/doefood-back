@@ -24,10 +24,19 @@ const usuarioModel = new UsuarioModel();
  */
 export const criarUsuario = async (req, res) => {
   try {
-    const novoUsuario = await usuarioModel.create(req.body);
+    const { id, ...dadosUsuario } = req.body;
+
+    // Verifica se o CNPJ já está cadastrado
+    const usuarioExistente = await usuarioModel.buscarPorCnpj(dadosUsuario.cnpj);
+    if (usuarioExistente) {
+      return res.status(409).json({ erro: 'Já existe um usuário cadastrado com este CNPJ.' });
+    }
+
+    // Cria o usuário com o id fornecido
+    const novoUsuario = await usuarioModel.criarUsuarioComId(id, dadosUsuario);
     return res.status(201).json(novoUsuario);
   } catch (error) {
-    return res.status(400).json({ erro: error.message });
+    return res.status(500).json({ erro: 'Erro ao criar usuário.' });
   }
 };
 
@@ -102,10 +111,14 @@ export const buscarUsuarioPorEmailSimples = async (email) => {
  */
 export const buscarUsuarioPorCnpj = async (req, res) => {
   try {
-    const usuario = await usuarioModel.buscarPorCNPJ(req.query.CNPJ);
-    return usuario
-      ? res.status(200).json(usuario)
-      : res.status(404).send('Usuário não encontrado');
+    const { cnpj } = req.params;
+    const usuario = await usuarioModel.buscarPorCnpj(cnpj);
+    if (!usuario) {
+      return res.status(404).json({
+        message: 'Usuário não encontrado',
+      });
+    }
+    return res.status(200).json(usuario);
   } catch (error) {
     return res.status(500).json({ erro: error.message });
   }

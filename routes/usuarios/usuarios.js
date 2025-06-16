@@ -40,7 +40,7 @@ const router = express.Router();
 router.post('/', criarUsuario);
 router.get('/:id', verificarToken, obterUsuario);
 router.get('/email/:email', verificarToken, buscarUsuarioPorEmail);
-router.get('/cnpj/:cnpj', verificarToken, buscarUsuarioPorCnpj);
+router.get('/cnpj/:cnpj', buscarUsuarioPorCnpj);
 router.get('/', verificarToken, listarTodosUsuarios);
 router.put('/:id', verificarToken, atualizarUsuario);
 router.delete('/:id', verificarToken, excluirUsuario);
