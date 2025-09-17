@@ -1,5 +1,6 @@
 /**
  *  Controlador para manipulação de usuários.
+ * Controller
  *  Este controlador fornece funcionalidades para criar, obter, atualizar e listar usuários,
  *  além de buscar usuários por email ou CNPJ.
  *  @module usuarioController
